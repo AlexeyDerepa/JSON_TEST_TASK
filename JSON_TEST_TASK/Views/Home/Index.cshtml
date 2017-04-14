@@ -1,0 +1,52 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<div id="containerMain">
+
+</div>
+
+@section scripts
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            GetAllCars();
+        });
+        // Получение всех записей по ajax-запросу
+        function GetAllCars() {
+
+            $.ajax({
+                url: '/api/cars',
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    WriteResponse(data);
+                },
+                error: function (x, y, z) {
+                    alert(x + '\n' + y + '\n' + z);
+                }
+            });
+        }
+        // вывод полученных данных на экран
+        function WriteResponse(cars) {
+
+
+            var allMakers = cars.reduce(function (result, current) {
+                result[current.maker] = result[current.maker] || [];
+                result[current.maker].push(current);
+                return result;
+            }, {});
+            var strResult = "<ul>";
+            $.each(allMakers, function (index, cars) {
+                strResult += "<li> <b>" + index + "</b><ul>";
+                $.each(cars, function (index, car) {
+                    strResult += "<li>" + car.model + "</li>";
+                })
+                strResult += "</ul></li>"
+            })
+            strResult += "</ul>"
+            $("#containerMain").html(strResult);
+        }
+    </script>
+}
